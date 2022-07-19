@@ -15,21 +15,26 @@ Including another URLconf
 """
 
 
-from django.conf.urls import patterns, include, url
+from django.urls import path , include
 from django.contrib import admin
 from rest_framework import routers
 from aphp.views import *
 
 router = routers.DefaultRouter()
-router.register(r'product', AuthGroupViewSet)
-router.register(r'supplier', AuthGroupPermissionsSupplierViewSet)
-router.register(r'supplier', AuthUserViewSet)
-router.register(r'supplier', AuthUserGroupsViewSet)
-router.register(r'supplier', AuthUserUserPermissionsViewSet)
-router.register(r'supplier', AuthtokenTokenViewSet)
+router.register(r'bloc', BlocViewSet)
+router.register(r'blochopital', BlocHopitalViewSet)
+router.register(r'brancard', BrancardViewSet)
+router.register(r'capteurbloc', CapteurBlocViewSet)
+router.register(r'hopital', HopitalViewSet)
+router.register(r'lit', LitViewSet)
+router.register(r'material', MaterialViewSet)
+router.register(r'materialhopital', MaterialHopitalViewSet)
+router.register(r'placesecteur', PlaceSecteurViewSet)
+router.register(r'relevebloc', ReleveBlocViewSet)
+router.register(r'secteur', SecteurViewSet)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('rest_framework.urls'))
+    path('api/', include(router.urls))
 ]

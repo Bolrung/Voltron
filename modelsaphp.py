@@ -8,121 +8,119 @@
 from django.db import models
 
 
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
+class Bloc(models.Model):
+    type = models.CharField(unique=True, max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_group'
+        db_table = 'bloc'
 
 
-class AuthGroupPermissions(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-    name = models.CharField(max_length=255)
+class BlocHopital(models.Model):
+    blochopitalid = models.AutoField()
+    hopitalid = models.OneToOneField('Hopital', models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    blocid = models.ForeignKey(Bloc, models.DO_NOTHING, db_column='blocid')
+    quantite = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
+        db_table = 'bloc_hopital'
+        unique_together = (('hopitalid', 'blocid'),)
 
 
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField()
-    username = models.CharField(unique=True, max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
-    first_name = models.CharField(max_length=150)
+class Brancard(models.Model):
+    brancardid = models.AutoField()
+    hopitalid = models.OneToOneField('Hopital', models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    etage = models.CharField(max_length=50)
+    quantite = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_user'
+        db_table = 'brancard'
+        unique_together = (('hopitalid', 'etage'),)
 
 
-class AuthUserGroups(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+class CapteurBloc(models.Model):
+    capteurblocid = models.AutoField()
+    tag = models.CharField(primary_key=True, max_length=50)
+    hopitalid = models.ForeignKey('Hopital', models.DO_NOTHING, db_column='hopitalid', blank=True, null=True)
+    bloc_code = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
+        db_table = 'capteur_bloc'
 
 
-class AuthtokenToken(models.Model):
-    key = models.CharField(primary_key=True, max_length=40)
-    created = models.DateTimeField()
-    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'authtoken_token'
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    action_flag = models.PositiveSmallIntegerField()
+class Hopital(models.Model):
+    name = models.CharField(unique=True, max_length=50, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    etage = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'django_admin_log'
+        db_table = 'hopital'
 
 
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
+class Lit(models.Model):
+    litid = models.AutoField()
+    hopitalid = models.OneToOneField(Hopital, models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    etage = models.CharField(max_length=50)
+    quantite = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'django_migrations'
+        db_table = 'lit'
+        unique_together = (('hopitalid', 'etage'),)
 
 
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
+class Material(models.Model):
+    type = models.CharField(unique=True, max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'django_session'
+        db_table = 'material'
+
+
+class MaterialHopital(models.Model):
+    materialhopitalid = models.AutoField()
+    hopitalid = models.OneToOneField(Hopital, models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    materialid = models.ForeignKey(Material, models.DO_NOTHING, db_column='materialid')
+    quantite = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'material_hopital'
+        unique_together = (('hopitalid', 'materialid'),)
+
+
+class PlaceSecteur(models.Model):
+    palceid = models.AutoField()
+    hopitalid = models.OneToOneField(Hopital, models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    secteurid = models.ForeignKey('Secteur', models.DO_NOTHING, db_column='secteurid')
+    quantite = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'place_secteur'
+        unique_together = (('hopitalid', 'secteurid'),)
+
+
+class ReleveBloc(models.Model):
+    releveblocid = models.AutoField()
+    tag = models.ForeignKey(CapteurBloc, models.DO_NOTHING, db_column='tag', blank=True, null=True)
+    humidite = models.FloatField(blank=True, null=True)
+    pression = models.FloatField(blank=True, null=True)
+    qualite = models.FloatField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'releve_bloc'
+
+
+class Secteur(models.Model):
+    type = models.CharField(unique=True, max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'secteur'

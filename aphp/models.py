@@ -6,80 +6,122 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.db.models import Model 
-
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
 
 
-class AuthGroupPermissions(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+class Bloc(models.Model):
+
+    type = models.CharField(unique=True, max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
+        db_table = 'bloc'
 
 
-class AuthPermission(models.Model):
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-    name = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField()
-    username = models.CharField(unique=True, max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
-    first_name = models.CharField(max_length=150)
+class BlocHopital(models.Model):
+    # blochopitalid = models.AutoField()
+    hopitalid = models.OneToOneField('Hopital', models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    blocid = models.ForeignKey(Bloc, models.DO_NOTHING, db_column='blocid')
+    quantite = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_user'
+        db_table = 'bloc_hopital'
+        unique_together = (('hopitalid', 'blocid'),)
 
 
-class AuthUserGroups(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+class Brancard(models.Model):
+    # brancardid = models.AutoField()
+    hopitalid = models.OneToOneField('Hopital', models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    etage = models.CharField(max_length=50)
+    quantite = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
+        db_table = 'brancard'
+        unique_together = (('hopitalid', 'etage'),)
 
 
-class AuthtokenToken(models.Model):
-    key = models.CharField(primary_key=True, max_length=40)
-    created = models.DateTimeField()
-    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
+class CapteurBloc(models.Model):
+    # capteurblocid = models.AutoField()
+    tag = models.CharField(primary_key=True, max_length=50)
+    hopitalid = models.ForeignKey('Hopital', models.DO_NOTHING, db_column='hopitalid', blank=True, null=True)
+    bloc_code = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'authtoken_token'
+        db_table = 'capteur_bloc'
 
+
+class Hopital(models.Model):
+    name = models.CharField(unique=True, max_length=50, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    etage = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'hopital'
+
+
+class Lit(models.Model):
+    # litid = models.AutoField()
+    hopitalid = models.OneToOneField(Hopital, models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    etage = models.CharField(max_length=50)
+    quantite = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'lit'
+        unique_together = (('hopitalid', 'etage'),)
+
+
+class Material(models.Model):
+    type = models.CharField(unique=True, max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'material'
+
+
+class MaterialHopital(models.Model):
+    # materialhopitalid = models.AutoField()
+    hopitalid = models.OneToOneField(Hopital, models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    materialid = models.ForeignKey(Material, models.DO_NOTHING, db_column='materialid')
+    quantite = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'material_hopital'
+        unique_together = (('hopitalid', 'materialid'),)
+
+
+class PlaceSecteur(models.Model):
+    # palceid = models.AutoField()
+    hopitalid = models.OneToOneField(Hopital, models.DO_NOTHING, db_column='hopitalid', primary_key=True)
+    secteurid = models.ForeignKey('Secteur', models.DO_NOTHING, db_column='secteurid')
+    quantite = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'place_secteur'
+        unique_together = (('hopitalid', 'secteurid'),)
+
+
+class ReleveBloc(models.Model):
+    # releveblocid = models.AutoField()
+    tag = models.ForeignKey(CapteurBloc, models.DO_NOTHING, db_column='tag', blank=True, null=True)
+    humidite = models.FloatField(blank=True, null=True)
+    pression = models.FloatField(blank=True, null=True)
+    qualite = models.FloatField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'releve_bloc'
+
+
+class Secteur(models.Model):
+    type = models.CharField(unique=True, max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'secteur'

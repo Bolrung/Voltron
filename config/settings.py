@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'aphp'
     
 
 ]
@@ -77,9 +78,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dbtest', 
+        # 'NAME': 'dbtest', 
+        # 'USER': 'postgres', 
+        # 'PASSWORD': '1234',
+        'NAME': 'postgres', 
         'USER': 'postgres', 
-        'PASSWORD': '1234',
+        'PASSWORD': 'postgres',
         'HOST': '127.0.0.1', 
         'PORT': '5432',
     }
